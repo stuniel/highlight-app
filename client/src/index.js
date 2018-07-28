@@ -50,7 +50,7 @@
   }
 
   function fetchDocument (page) {
-    const url = `http://localhost:9000/documents/${page}`
+    const url = `/documents/${page}`
     elements.wrapper.classList.remove('error')
 
     fetch(url)

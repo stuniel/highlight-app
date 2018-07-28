@@ -54,7 +54,7 @@
   }
 
   function fetchDocument(page) {
-    var url = 'http://localhost:9000/documents/' + page;
+    var url = '/documents/' + page;
     elements.wrapper.classList.remove('error');
 
     fetch(url).then(function (res) {
