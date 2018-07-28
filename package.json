@@ -8,10 +8,12 @@
     "start": "node build/index.js",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
-  "author": "",
+  "author": "Daniel Studziński",
   "license": "ISC",
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0"
+    "babel-preset-env": "^1.7.0",
+    "express": "^4.16.3",
+    "path": "^0.12.7"
   }
 }

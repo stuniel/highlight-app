@@ -1,46 +1,36 @@
-const http = require('http')
+const express = require('express')
 const fs = require('fs')
+const path = require('path')
+
+const app = express()
 
 const port = process.env.PORT || 9000
 
-http.createServer((req, res) => {
-  // Set CORS headers
-	res.setHeader('Access-Control-Allow-Origin', '*');
-	res.setHeader('Access-Control-Request-Method', '*');
-	res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-	res.setHeader('Access-Control-Allow-Headers', '*');
+app.use(express.static(path.join(__dirname, '../client')))
 
-  if (req.url === '/favicon.ico') {
-    res.writeHead(200, {'Content-Type': 'image/x-icon'})
-    res.end()
-    return
-  }
+app.get('/documents/:index', (req, res) => {
+  fs.readFile('data.json', 'utf8', (err, data) => {
+    let document = JSON.parse(data)
+    const { url } = req
+    const { documents: { length } } = document
+    const { index } = req.params
+    const inRange = index >= 1 && index <= length
 
-  const path = req.url.split('/')
+    if (!inRange) {
+			res.set('Content-Type', 'text/plain');
+			res.status(404).send('404 - Not Found').end()
+      return
+    }
 
-  if (path[1] === 'documents') {
-    fs.readFile('data.json', 'utf8', (err, data) => {
-      let document = JSON.parse(data)
-      const { url } = req
-      const { documents: { length } } = document
-      const index = path[2] - 1
-      const inRange = index >= 0 && index < length
+    const paragraph = document.documents[index-1]
 
-      if (!inRange) {
-        res.writeHead(404, {'Content-Type': 'text/plain'})
-        res.write('404 - Not Found')
-        res.end()
-        return
-      }
+		res.set('Content-Type', 'text/plain');
+		res.status(200).send(paragraph).end()
+  })
+})
 
-      const paragraph = document.documents[index]
+app.get('/', (req, res) => {
+	res.sendFile(path.join(__dirname+'client/index.html'))
+})
 
-      res.writeHead(200, {'Content-Type': 'text/plain'})
-      res.write(paragraph)
-      res.end()
-    })
-  } else {
-    res.end()
-  }
-
-}).listen(port)
+app.listen(port)
